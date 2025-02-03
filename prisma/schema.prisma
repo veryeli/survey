@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int       @id @default(autoincrement())
+  email          String    @unique
+  password       String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId Int
+}
+
+model Organization {
+  id    Int    @id @default(autoincrement())
+  name  String
+  sites Site[]
+  users User[]
+}
+
+model Site {
+  id             Int             @id @default(autoincrement())
+  address        String
+  organizationId Int
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  siteSurveys    SiteSurvey[]
+}
+
+model Survey {
+  id     Int    @id @default(autoincrement())
+  year   Int
+  season String
+  pages  Page[]  // Core pages for the survey
+}
+
+model Page {
+  id       Int       @id @default(autoincrement())
+  title    String
+  surveyId Int
+  survey   Survey    @relation(fields: [surveyId], references: [id])
+  questions Question[]  // Standardized questions for the page
+}
+
+model Question {
+  id           Int    @id @default(autoincrement())
+  text         String
+  type         String
+  defaultValue String
+  pageId       Int
+  page         Page   @relation(fields: [pageId], references: [id])
+}
+
+model SiteSurvey {
+  id       Int        @id @default(autoincrement())
+  siteId   Int
+  surveyId Int
+  site     Site       @relation(fields: [siteId], references: [id])
+  survey   Survey     @relation(fields: [surveyId], references: [id])
+  sitePages SitePage[]  // Site-specific pages with responses
+}
+
+model SitePage {
+  id           Int         @id @default(autoincrement())
+  siteSurveyId Int
+  pageId       Int
+  siteSurvey   SiteSurvey  @relation(fields: [siteSurveyId], references: [id])
+  page         Page        @relation(fields: [pageId], references: [id])
+  responses    QuestionResponse[]  // Responses for the questions on this page
+}
+
+model QuestionResponse {
+  id         Int     @id @default(autoincrement())
+  sitePageId Int
+  questionId Int
+  value      String
+  sitePage   SitePage   @relation(fields: [sitePageId], references: [id])
+  question   Question   @relation(fields: [questionId], references: [id])
+}
