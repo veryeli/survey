@@ -35,6 +35,7 @@ model Survey {
   year       Int
   season     String
   pages      Page[]
+  SiteSurvey SiteSurvey[]
 }
 
 model Page {
@@ -43,16 +44,17 @@ model Page {
   surveyId  Int
   survey    Survey     @relation(fields: [surveyId], references: [id])
   questions Question[]
+  SitePage  SitePage[]
 }
 
 model Question {
-  id               Int                @id @default(autoincrement())
-  text             String
-  type             String
-  defaultValue     String
-  pageId           Int
-  page             Page               @relation(fields: [pageId], references: [id])
-  responses        QuestionResponse[]  // Keeping this if you'll query responses for questions
+  id           Int                @id @default(autoincrement())
+  text         String
+  type         String
+  defaultValue String
+  pageId       Int
+  page         Page               @relation(fields: [pageId], references: [id])
+  responses    QuestionResponse[] // Keeping this if you'll query responses for questions
 }
 
 model SiteSurvey {
