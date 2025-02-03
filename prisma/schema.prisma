@@ -8,8 +8,8 @@ datasource db {
 }
 
 model User {
-  id             Int       @id @default(autoincrement())
-  email          String    @unique
+  id             Int          @id @default(autoincrement())
+  email          String       @unique
   password       String
   organization   Organization @relation(fields: [organizationId], references: [id])
   organizationId Int
@@ -23,7 +23,7 @@ model Organization {
 }
 
 model Site {
-  id             Int             @id @default(autoincrement())
+  id             Int          @id @default(autoincrement())
   address        String
   organizationId Int
   organization   Organization @relation(fields: [organizationId], references: [id])
@@ -31,52 +31,53 @@ model Site {
 }
 
 model Survey {
-  id     Int    @id @default(autoincrement())
-  year   Int
-  season String
-  pages  Page[]  // Core pages for the survey
+  id         Int          @id @default(autoincrement())
+  year       Int
+  season     String
+  pages      Page[]
 }
 
 model Page {
-  id       Int       @id @default(autoincrement())
-  title    String
-  surveyId Int
-  survey   Survey    @relation(fields: [surveyId], references: [id])
-  questions Question[]  // Standardized questions for the page
+  id        Int        @id @default(autoincrement())
+  title     String
+  surveyId  Int
+  survey    Survey     @relation(fields: [surveyId], references: [id])
+  questions Question[]
 }
 
 model Question {
-  id           Int    @id @default(autoincrement())
-  text         String
-  type         String
-  defaultValue String
-  pageId       Int
-  page         Page   @relation(fields: [pageId], references: [id])
+  id               Int                @id @default(autoincrement())
+  text             String
+  type             String
+  defaultValue     String
+  pageId           Int
+  page             Page               @relation(fields: [pageId], references: [id])
+  responses        QuestionResponse[]  // Keeping this if you'll query responses for questions
 }
 
 model SiteSurvey {
-  id       Int        @id @default(autoincrement())
-  siteId   Int
-  surveyId Int
-  site     Site       @relation(fields: [siteId], references: [id])
-  survey   Survey     @relation(fields: [surveyId], references: [id])
-  sitePages SitePage[]  // Site-specific pages with responses
+  id        Int        @id @default(autoincrement())
+  siteId    Int
+  surveyId  Int
+  site      Site       @relation(fields: [siteId], references: [id])
+  survey    Survey     @relation(fields: [surveyId], references: [id])
+  sitePages SitePage[]
 }
 
 model SitePage {
-  id           Int         @id @default(autoincrement())
+  id           Int                @id @default(autoincrement())
   siteSurveyId Int
   pageId       Int
-  siteSurvey   SiteSurvey  @relation(fields: [siteSurveyId], references: [id])
-  page         Page        @relation(fields: [pageId], references: [id])
-  responses    QuestionResponse[]  // Responses for the questions on this page
+  siteSurvey   SiteSurvey         @relation(fields: [siteSurveyId], references: [id])
+  page         Page               @relation(fields: [pageId], references: [id])
+  responses    QuestionResponse[]
 }
 
 model QuestionResponse {
-  id         Int     @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   sitePageId Int
   questionId Int
   value      String
-  sitePage   SitePage   @relation(fields: [sitePageId], references: [id])
-  question   Question   @relation(fields: [questionId], references: [id])
+  sitePage   SitePage @relation(fields: [sitePageId], references: [id])
+  question   Question @relation(fields: [questionId], references: [id])
 }
