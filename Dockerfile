@@ -1,20 +1,18 @@
-# Use the official Node.js image
+# Use Node.js image
 FROM node:18
 
-# Create app directory
+# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
-
 # Install dependencies
+COPY package*.json ./
 RUN npm install
 
-# Copy the rest of the application code
+# Copy the rest of the code
 COPY . .
 
-# Expose the port the app runs on
+# Expose port
 EXPOSE 3000
 
-# Run the Next.js development server
+# Run the app in development mode
 CMD ["npm", "run", "dev"]

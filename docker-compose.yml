@@ -20,9 +20,12 @@ services:
       - "3000:3000"
     environment:
       DATABASE_URL: postgres://postgres:postgres@db:5432/needs_assessment
+    volumes:
+      - .:/app    # This binds your project folder to the /app directory inside the container
+      - /app/node_modules  # Prevent node_modules from being overwritten by the host
     depends_on:
       - db
-    command: npm run dev  # You can change to 'npm run build && npm start' for production
+    command: npm run dev  # Ensure it's running in development mode
 
 volumes:
   postgres_data:

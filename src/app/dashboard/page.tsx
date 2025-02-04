@@ -1,65 +1,27 @@
 "use client";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
-interface Page {
-  id: number;
-  title: string;
-  completed: boolean;
-}
-
-interface Survey {
-  id: number;
-  title: string;
-  year: number;
-  season: string;
-  pages?: Page[];
-}
-
-export default function DashboardPage() {
-  const { data: session, status } = useSession();
+export default function Dashboard() {
+  const [survey, setSurvey] = useState(null);
   const router = useRouter();
-  const [survey, setSurvey] = useState<Survey | null>(null);
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
-  }, [status, router]);
+    fetch("/api/survey/1")  // Replace '1' with dynamic surveyId
+      .then((res) => res.json())
+      .then((data) => setSurvey(data));
+  }, []);
 
-  useEffect(() => {
-    if (status === "authenticated") {
-      fetch("/api/surveys")
-        .then((res) => res.json())
-        .then((data) => setSurvey(data[0]))  // Load the most recent survey
-        .catch((err) => console.error("Failed to load survey:", err));
-    }
-  }, [status]);
-
-  if (status === "loading" || !survey) return <p>Loading...</p>;
+  if (!survey) return <div>Loading...</div>;
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-6">Welcome, {session?.user?.email}</h1>
-      <h2 className="text-xl mb-4">{survey.title}</h2>
-
-      <ul className="space-y-2">
-        {survey.pages?.map((page) => (
-          <li key={page.id} className="flex justify-between items-center p-4 border rounded-lg shadow-sm">
-            <div className="flex items-center space-x-3">
-              <span
-                className={`h-4 w-4 rounded-full ${
-                  page.completed ? "bg-green-500" : "bg-red-500"
-                }`}
-              ></span>
-              <span>{page.title}</span>
-            </div>
-            <button
-              onClick={() => router.push(`/survey/${survey.id}/page/${page.id}`)}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-            >
-              {page.completed ? "View" : "Continue"}
+    <div>
+      <h1>{survey.season} {survey.year} Survey</h1>
+      <ul>
+        {survey.pages.map((page) => (
+          <li key={page.id}>
+            <button onClick={() => router.push(`/survey/${survey.id}/page/${page.id}`)}>
+              {page.title}
             </button>
           </li>
         ))}

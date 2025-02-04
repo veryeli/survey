@@ -1,22 +1,41 @@
-"use client";  // This makes the component run on the client side
-
-import { useSession } from "next-auth/react";
+"use client";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
-export default function HomePage() {
-  const { data: session, status } = useSession();
+export default function Dashboard() {
+  const [survey, setSurvey] = useState(null);
+  const [error, setError] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "authenticated") {
-      // Redirect to dashboard if logged in
-      router.push("/dashboard");
-    } else if (status === "unauthenticated") {
-      // Redirect to login if not authenticated
-      router.push("/login");
-    }
-  }, [status, router]);
+    fetch("/api/survey/1")
+      .then((res) => {
+        if (!res.ok) throw new Error(`API Error: ${res.status}`);
+        return res.json();
+      })
+      .then((data) => setSurvey(data))
+      .catch((err) => setError(err.message));
+  }, []);
 
-  return <p>Loading...</p>;
+  if (error) return <div>Error: {error}</div>;
+  if (!survey) return <div>Loading...</div>;
+
+  return (
+    <div className="max-w-4xl mx-auto p-8">
+      <h1 className="text-3xl font-bold mb-6">{survey.season} {survey.year} Survey</h1>
+      <ul className="space-y-4">
+        {survey.pages.map((page) => (
+          <li key={page.id} className="p-4 border rounded-lg shadow-sm flex justify-between items-center">
+            <span className="text-lg font-medium">{page.title}</span>
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              onClick={() => router.push(`/survey/${survey.id}/page/${page.id}`)}
+            >
+              View
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }

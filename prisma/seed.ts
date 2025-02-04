@@ -2,29 +2,14 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  // Create an organization
-  const organization = await prisma.organization.create({
-    data: { name: "Default Organization" },
-  });
+  // Step 1: Delete existing surveys and related data
+  await prisma.question.deleteMany();
+  await prisma.page.deleteMany();
+  await prisma.survey.deleteMany();
 
-  // Create a site
-  const site = await prisma.site.create({
-    data: {
-      address: "123 Default St",
-      organizationId: organization.id,
-    },
-  });
+  console.log("Existing surveys, pages, and questions deleted.");
 
-  // Create a user
-  const user = await prisma.user.create({
-    data: {
-      email: "admin@example.com",
-      password: "admin123",  // In production, hash passwords!
-      organizationId: organization.id,
-    },
-  });
-
-  // Create a survey
+  // Step 2: Create a new survey with pages and questions
   const survey = await prisma.survey.create({
     data: {
       year: 2024,
@@ -37,7 +22,48 @@ async function main() {
               create: [
                 { text: "People in Region", type: "Numeric", defaultValue: "0" },
                 { text: "People Served Per Month", type: "Numeric", defaultValue: "0" },
-                { text: "Completed", type: "Confirm", defaultValue: "false" },
+                { text: "Men Served", type: "Numeric", defaultValue: "0" },
+                { text: "Women Served", type: "Numeric", defaultValue: "0" },
+                { text: "Boys Served", type: "Numeric", defaultValue: "0" },
+                { text: "Girls Served", type: "Numeric", defaultValue: "0" },
+                { text: "Infants Served", type: "Numeric", defaultValue: "0" },
+                { text: "Needs Served", type: "MultiSelect", defaultValue: "Hygiene,Shelter,Food,Clothing" },
+              ],
+            },
+          },
+          {
+            title: "Hygiene",
+            questions: {
+              create: [
+                { text: "How many hygiene kits are distributed monthly?", type: "Numeric", defaultValue: "0" },
+                { text: "Are hygiene products gender-specific?", type: "Dropdown", defaultValue: "Yes,No" },
+              ],
+            },
+          },
+          {
+            title: "Shelter",
+            questions: {
+              create: [
+                { text: "Number of temporary shelters available?", type: "Numeric", defaultValue: "0" },
+                { text: "Average length of stay in shelters?", type: "Numeric", defaultValue: "0" },
+              ],
+            },
+          },
+          {
+            title: "Food",
+            questions: {
+              create: [
+                { text: "Meals provided per day?", type: "Numeric", defaultValue: "0" },
+                { text: "Are special dietary needs accommodated?", type: "Dropdown", defaultValue: "Yes,No" },
+              ],
+            },
+          },
+          {
+            title: "Clothing",
+            questions: {
+              create: [
+                { text: "Number of clothing items distributed monthly?", type: "Numeric", defaultValue: "0" },
+                { text: "Are seasonal clothes provided?", type: "Dropdown", defaultValue: "Yes,No" },
               ],
             },
           },
@@ -46,22 +72,9 @@ async function main() {
     },
   });
 
-  // Create a site survey
-  await prisma.siteSurvey.create({
-    data: {
-      siteId: site.id,
-      surveyId: survey.id,
-    },
-  });
-
-  console.log("Database seeded!");
+  console.log("New survey created:", survey);
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+  .catch((e) => console.error(e))
+  .finally(() => prisma.$disconnect());
