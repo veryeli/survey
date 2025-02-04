@@ -6,7 +6,7 @@ import { Question } from "@/types/models";  // No need for SitePage here
 
 export default function SurveyPage() {
   const { surveyId, pageId } = useParams();
-  const [page, setPage] = useState<any>(null);  // Directly store the page object
+  const [page, setPage] = useState<{ title: string; questions: Question[] } | null>(null);  // Directly store the page object
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
