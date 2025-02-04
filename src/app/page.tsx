@@ -44,7 +44,7 @@ export default function Dashboard() {
   return (
     <div className="max-w-4xl mx-auto p-8">
       <h1 className="text-3xl font-bold mb-6">
-        {surveyDetails.season} {surveyDetails.year} Site Survey
+        {surveyDetails.season} {surveyDetails.year} Site Survey APP Page.tsx
       </h1>
       <ul className="space-y-4">
         {surveyDetails.pages.map((page) => (

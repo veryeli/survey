@@ -2,55 +2,49 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Survey } from "@/types/models";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  interface Survey {
-    id: string;
-    season: string;
-    year: number;
-    pages: { id: string; title: string }[];
-  }
-
   const [siteSurvey, setSiteSurvey] = useState<{ survey: Survey } | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === "authenticated") {
       fetch("/api/site-survey")
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) throw new Error(`API Error: ${res.status}`);
+          return res.json();
+        })
         .then((data) => setSiteSurvey(data))
-        .catch((err) => console.error("Failed to load site survey:", err));
+        .catch((err) => setError(err.message));
     }
   }, [status]);
 
-  if (status === "loading") {
-    return <div>Loading...</div>;
-  }
-
+  if (status === "loading" || !siteSurvey) return <div>Loading...</div>;
   if (!session) {
     router.push("/login");
     return null;
   }
+  if (error) return <div>Error: {error}</div>;
 
   return (
-    <div>
-      {siteSurvey ? (
-        <>
-          <h1>{siteSurvey.survey.season} {siteSurvey.survey.year} Survey</h1>
-          <ul>
-            {siteSurvey.survey.pages.map((page) => (
-              <li key={page.id}>
-                <button onClick={() => router.push(`/survey/${siteSurvey.survey.id}/page/${page.id}`)}>
-                  {page.title}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </>
-      ) : (
-        <p>No Site Survey Found</p>
-      )}
+    <div className="max-w-4xl mx-auto p-8">
+      <h1 className="text-3xl font-bold mb-6">{siteSurvey.survey.season} {siteSurvey.survey.year} Survey Dashboard</h1>
+      <ul className="space-y-4">
+        {siteSurvey.survey.pages.map((page) => (
+          <li key={page.id} className="p-4 border rounded-lg shadow-sm flex justify-between items-center">
+            <span className="text-lg font-medium">{page.title}</span>
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              onClick={() => router.push(`/survey/${siteSurvey.survey.id}/page/${page.id}`)}
+            >
+              View
+            </button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

@@ -3,7 +3,7 @@
 export interface Question {
   id: number;
   text: string;
-  type: "Numeric" | "Dropdown" | "MultiSelect" | "Short Response" | "Long Response" | "Confirm";
+  type: "Numeric" | "Dropdown" | "MultiSelect" | "Short Response" | "Long Response" | "Confirm" | "SizingGrid";
   defaultValue?: string;
 }
 
@@ -30,7 +30,12 @@ export interface QuestionResponse {
 
 export interface SitePage {
   id: number;
-  pageId: number;
+  siteSurveyId: number;
+  page: {
+    id: number;
+    title: string;
+    questions: Question[];
+  };
   responses: QuestionResponse[];
 }
 

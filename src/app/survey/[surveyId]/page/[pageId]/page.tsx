@@ -1,41 +1,58 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 
-export default function Dashboard() {
-  const [survey, setSurvey] = useState(null);
-  const [error, setError] = useState(null);
-  const router = useRouter();
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { Question } from "@/types/models";  // No need for SitePage here
+
+export default function SurveyPage() {
+  const { surveyId, pageId } = useParams();
+  const [page, setPage] = useState<any>(null);  // Directly store the page object
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/survey/1")
+    if (!surveyId || !pageId) return;
+
+    fetch(`/api/survey/${surveyId}/page/${pageId}`)
       .then((res) => {
         if (!res.ok) throw new Error(`API Error: ${res.status}`);
         return res.json();
       })
-      .then((data) => setSurvey(data))
+      .then((data) => setPage(data))  // Save page data directly
       .catch((err) => setError(err.message));
-  }, []);
+  }, [surveyId, pageId]);
 
   if (error) return <div>Error: {error}</div>;
-  if (!survey) return <div>Loading...</div>;
+  if (!page) return <div>Loading...</div>;
 
   return (
     <div className="max-w-4xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">{survey.season} {survey.year} Survey</h1>
-      <ul className="space-y-4">
-        {survey.pages.map((page) => (
-          <li key={page.id} className="p-4 border rounded-lg shadow-sm flex justify-between items-center">
-            <span className="text-lg font-medium">{page.title}</span>
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              onClick={() => router.push(`/survey/${survey.id}/page/${page.id}`)}
-            >
-              View
-            </button>
-          </li>
+      <h1 className="text-3xl font-bold mb-6">{page.title}</h1>
+      <form className="space-y-4">
+        {page.questions.map((question: Question) => (
+          <div key={question.id}>
+            <label className="block text-lg font-medium">{question.text}</label>
+            <input
+              type="text"
+              className="mt-1 p-2 border rounded w-full"
+              defaultValue={question.defaultValue}
+            />
+          </div>
         ))}
-      </ul>
+        <div className="flex space-x-4">
+          <button
+            type="button"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Save
+          </button>
+          <button
+            type="submit"
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          >
+            Save & Confirm
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
