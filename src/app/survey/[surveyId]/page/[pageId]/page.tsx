@@ -1,29 +1,43 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { Question } from "@/types/models";
+import Sidebar from "@/components/Sidebar";
 
 export default function SurveyPage() {
   const { surveyId, pageId } = useParams();
+  const router = useRouter();
   const [page, setPage] = useState<{ title: string; questions: Question[] } | null>(null);
   const [responses, setResponses] = useState<{ [key: number]: string }>({});
   const [error, setError] = useState<string | null>(null);
 
+
   useEffect(() => {
     if (!surveyId || !pageId) return;
-
     fetch(`/api/survey/${surveyId}/page/${pageId}`)
       .then((res) => {
         if (!res.ok) throw new Error(`API Error: ${res.status}`);
         return res.json();
       })
       .then((data) => {
+        // Expect data to include both questions and responses, e.g.:
+        // { title: string, questions: Question[], responses: { questionId: number, value: string }[] }
         setPage(data);
-        const initialResponses = data.questions.reduce((acc: { [key: number]: string }, question: Question) => {
-          acc[question.id] = question.defaultValue || "";
-          return acc;
-        }, {});
+        const initialResponses = data.questions.reduce(
+          (acc: { [key: number]: string }, question: Question) => {
+            const existing = data.responses?.find(
+              (resp: { questionId: number; value: string }) =>
+                resp.questionId === question.id
+            );
+            acc[question.id] =
+              existing && existing.value !== ""
+                ? existing.value
+                : question.defaultValue || "";
+            return acc;
+          },
+          {}
+        );
         setResponses(initialResponses);
       })
       .catch((err) => setError(err.message));
@@ -56,6 +70,7 @@ export default function SurveyPage() {
       setError(errorData.error || "Failed to save responses.");
     } else {
       alert(confirm ? "Responses saved and confirmed!" : "Responses saved!");
+      router.push("/dashboard");
     }
   };
 
@@ -68,10 +83,10 @@ export default function SurveyPage() {
       <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
         {page.questions.map((question: Question) => (
           <div key={question.id}>
-            <label className="block text-lg font-medium">{question.text}</label>
+            <label className="block text-lg text-gray-900 font-medium">{question.text}</label>
             <input
               type="text"
-              className="mt-1 p-2 border rounded w-full"
+              className="mt-1 p-2 border text-gray-900 rounded w-full"
               value={responses[question.id]}
               onChange={(e) => handleInputChange(question.id, e.target.value)}
             />

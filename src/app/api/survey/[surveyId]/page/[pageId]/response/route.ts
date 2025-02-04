@@ -1,26 +1,61 @@
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth/next"; // Adjust per your setup
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 const prisma = new PrismaClient();
 
-export async function POST(request: Request, { params }: { params: { surveyId: string; pageId: string } }) {
-  const { surveyId, pageId } = params;
+export async function POST(
+  request: Request,
+  context: { params: { surveyId: string; pageId: string } }
+) {
+  const { surveyId, pageId } = context.params;
+
+  // Retrieve session and user email
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user?.email) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  }
+
+  // Look up the user to get the siteId
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: { siteId: true },
+  });
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+
+  // Find the sitePage by matching pageId, surveyId, and the user's siteId
+  const sitePage = await prisma.sitePage.findFirst({
+    where: {
+      pageId: parseInt(pageId, 10),
+      siteSurvey: {
+        surveyId: parseInt(surveyId, 10),
+        siteId: user.siteId,
+      },
+    },
+  });
+  if (!sitePage) {
+    return NextResponse.json({ error: "Site page not found" }, { status: 404 });
+  }
 
   try {
     const { responses, confirmed } = await request.json();
     console.log("Received responses:", responses);
 
-    // Ensure data exists
     if (!responses || responses.length === 0) {
       return NextResponse.json({ error: "No responses provided" }, { status: 400 });
     }
 
-    // Process responses
+    // Upsert each response using the composite unique key
     for (const response of responses) {
-
       await prisma.questionResponse.upsert({
         where: {
-          id: response.id || 0, // Adjust based on your unique field
+          sitePageId_questionId: {
+            sitePageId: sitePage.id,
+            questionId: response.questionId,
+          },
         },
         update: {
           value: response.value,
@@ -33,10 +68,10 @@ export async function POST(request: Request, { params }: { params: { surveyId: s
       });
     }
 
-    // Update confirmation status
+    // Update confirmation status on the site page
     await prisma.sitePage.update({
-      where: { id: parseInt(pageId, 10) },
-      data: { confirmed: confirmed },
+      where: { id: sitePage.id },
+      data: { confirmed },
     });
 
     return NextResponse.json({ message: "Responses saved successfully!" });
