@@ -22,6 +22,7 @@ export interface Survey {
 }
 
 export interface QuestionResponse {
+  sitePageId: number | undefined;
   id: number;
   questionId: number;
   value: string;

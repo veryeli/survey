@@ -5,13 +5,14 @@ const prisma = new PrismaClient();
 
 async function main() {
   // Step 1: Delete existing data
-  await prisma.question.deleteMany();
+  await prisma.questionResponse.deleteMany();
+  await prisma.siteSurvey.deleteMany();
   await prisma.page.deleteMany();
   await prisma.survey.deleteMany();
-  await prisma.siteSurvey.deleteMany();
   await prisma.site.deleteMany();
   await prisma.organization.deleteMany();
   await prisma.user.deleteMany();
+
 
   console.log("Existing surveys, pages, and questions deleted.");
 

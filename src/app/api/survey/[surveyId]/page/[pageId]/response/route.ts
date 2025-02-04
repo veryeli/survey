@@ -1,23 +1,32 @@
+"use client";
+
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { QuestionResponse } from "@/types/models";
 
 const prisma = new PrismaClient();
 
-export async function POST(request, { params }) {
-  const { surveyId, pageId } = params;
-  const { siteSurveyId, responses } = await request.json();
+interface RequestParams {
+  surveyId: string;
+  pageId: string;
+}
+
+interface RequestBody {
+  siteSurveyId: number;
+  responses: QuestionResponse[];
+}
+
+export async function POST(request: Request, { }: { params: RequestParams }) {
+  const { responses }: RequestBody = await request.json();
 
   for (const response of responses) {
     await prisma.questionResponse.upsert({
       where: {
-        sitePageId_questionId: {
-          sitePageId: response.sitePageId,
-          questionId: response.questionId,
-        },
+        id: response.id,
       },
       update: { value: response.value },
       create: {
-        sitePageId: response.sitePageId,
+        sitePageId: response.sitePageId ?? 0,
         questionId: response.questionId,
         value: response.value,
       },
@@ -26,4 +35,3 @@ export async function POST(request, { params }) {
 
   return NextResponse.json({ message: "Responses saved successfully!" });
 }
-
