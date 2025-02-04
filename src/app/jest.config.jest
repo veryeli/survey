@@ -1,0 +1,9 @@
+module.exports = {
+  preset: "ts-jest",
+  testEnvironment: "jsdom",  // Use "node" if you're testing backend APIs
+  moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/src/$1",  // Adjust based on your import aliases
+  },
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
+  testPathIgnorePatterns: ["/node_modules/", "/.next/"],
+};

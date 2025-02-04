@@ -106,7 +106,6 @@ async function main() {
     },
   });
 
-  // Step 6: Link Survey to Sites
   await prisma.siteSurvey.create({ data: { siteId: site1.id, surveyId: survey.id } });
   await prisma.siteSurvey.create({ data: { siteId: site2.id, surveyId: survey.id } });
 

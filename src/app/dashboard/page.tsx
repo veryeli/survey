@@ -1,43 +1,56 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
-  const [sites, setSites] = useState([]);
-  const [error, setError] = useState(null);
+  const { data: session, status } = useSession();
   const router = useRouter();
+  interface Survey {
+    id: string;
+    season: string;
+    year: number;
+    pages: { id: string; title: string }[];
+  }
+
+  const [siteSurvey, setSiteSurvey] = useState<{ survey: Survey } | null>(null);
 
   useEffect(() => {
-    fetch("/api/site-surveys")
-      .then((res) => res.json())
-      .then((data) => setSites(data))
-      .catch((err) => setError(err.message));
-  }, []);
+    if (status === "authenticated") {
+      fetch("/api/site-survey")
+        .then((res) => res.json())
+        .then((data) => setSiteSurvey(data))
+        .catch((err) => console.error("Failed to load site survey:", err));
+    }
+  }, [status]);
 
-  if (error) return <div>Error: {error}</div>;
-  if (!sites.length) return <div>Loading...</div>;
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  if (!session) {
+    router.push("/login");
+    return null;
+  }
 
   return (
-    <div className="max-w-4xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">Your Site Surveys</h1>
-      <ul className="space-y-4">
-        {sites.map((site) => (
-          <li key={site.id} className="p-4 border rounded-lg shadow-sm">
-            <h2 className="text-xl font-medium">{site.address}</h2>
-            {site.siteSurveys.map((survey) => (
-              <div key={survey.id}>
-                <p className="mt-2">{survey.survey.season} {survey.survey.year} Survey</p>
-                <button
-                  className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
-                  onClick={() => router.push(`/survey/${survey.survey.id}`)}
-                >
-                  View Survey
+    <div>
+      {siteSurvey ? (
+        <>
+          <h1>{siteSurvey.survey.season} {siteSurvey.survey.year} Survey</h1>
+          <ul>
+            {siteSurvey.survey.pages.map((page) => (
+              <li key={page.id}>
+                <button onClick={() => router.push(`/survey/${siteSurvey.survey.id}/page/${page.id}`)}>
+                  {page.title}
                 </button>
-              </div>
+              </li>
             ))}
-          </li>
-        ))}
-      </ul>
+          </ul>
+        </>
+      ) : (
+        <p>No Site Survey Found</p>
+      )}
     </div>
   );
 }

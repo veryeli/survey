@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import surveys from "../../../mock/surveys.json";
+import { PrismaClient } from "@prisma/client";
 
-// Helper function to determine the latest survey
-function getMostRecentSurvey(surveys: any[]) {
-  // Define season order for comparison
+const prisma = new PrismaClient();
+
+// Helper function to determine the most recent survey
+function getMostRecentSurvey(surveys: { year: number; season: string }[]) {
   const seasonOrder = ["Winter", "Spring", "Summer", "Fall"];
 
   return surveys.reduce((latest, current) => {
@@ -18,7 +19,32 @@ function getMostRecentSurvey(surveys: any[]) {
   }, surveys[0]);
 }
 
+// API Route
 export async function GET() {
-  const latestSurvey = getMostRecentSurvey(surveys);
-  return NextResponse.json([latestSurvey]);  // Return as an array for consistency
+  try {
+    // Fetch all surveys from the database
+    const surveys = await prisma.survey.findMany({
+      include: {
+        pages: {
+          include: {
+            questions: true
+          }
+        }
+      }
+    });
+
+    if (!surveys || surveys.length === 0) {
+      return NextResponse.json({ error: "No surveys found" }, { status: 404 });
+    }
+
+    // Get the most recent survey
+    const latestSurvey = getMostRecentSurvey(surveys);
+
+    return NextResponse.json([latestSurvey]); // Return as an array for consistency
+  } catch (error) {
+    console.error("Error fetching surveys:", error);
+    return NextResponse.json({ error: "Failed to fetch surveys" }, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
+  }
 }

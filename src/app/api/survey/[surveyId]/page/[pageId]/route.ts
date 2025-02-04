@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-export async function GET(request, { params }) {
+export async function GET({ params }: { params: { pageId: string } }) {
   const { pageId } = params;
 
   const page = await prisma.page.findUnique({
