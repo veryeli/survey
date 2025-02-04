@@ -8,7 +8,7 @@ export default function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    fetch("/api/survey/1")
+    fetch("/api/survey/3")
       .then((res) => {
         if (!res.ok) throw new Error(`API Error: ${res.status}`);
         return res.json();

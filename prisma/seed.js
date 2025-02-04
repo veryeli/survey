@@ -1,15 +1,49 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
+
 const prisma = new PrismaClient();
 
 async function main() {
-  // Step 1: Delete existing surveys and related data
+  // Step 1: Delete existing data
   await prisma.question.deleteMany();
   await prisma.page.deleteMany();
   await prisma.survey.deleteMany();
+  await prisma.siteSurvey.deleteMany();
+  await prisma.site.deleteMany();
+  await prisma.organization.deleteMany();
+  await prisma.user.deleteMany();
 
   console.log("Existing surveys, pages, and questions deleted.");
 
-  // Step 2: Create a new survey with pages and questions
+  // Step 2: Create Organizations
+  const org1 = await prisma.organization.create({ data: { name: "Organization One" } });
+  const org2 = await prisma.organization.create({ data: { name: "Organization Two" } });
+
+  // Step 3: Create Sites
+  const site1 = await prisma.site.create({ data: { address: "123 Main St", organizationId: org1.id } });
+  const site2 = await prisma.site.create({ data: { address: "456 Elm St", organizationId: org2.id } });
+
+  // Step 4: Create Users with hashed passwords
+  const password1 = await bcrypt.hash("password123", 10);
+  const password2 = await bcrypt.hash("password123", 10);
+
+  await prisma.user.create({
+    data: {
+      email: "user1@example.com",
+      password: password1,
+      organizationId: org1.id,
+    },
+  });
+
+  await prisma.user.create({
+    data: {
+      email: "user2@example.com",
+      password: password2,
+      organizationId: org2.id,
+    },
+  });
+
+  // Step 5: Create a Survey with Pages and Questions
   const survey = await prisma.survey.create({
     data: {
       year: 2024,
@@ -72,9 +106,17 @@ async function main() {
     },
   });
 
-  console.log("New survey created:", survey);
+  // Step 6: Link Survey to Sites
+  await prisma.siteSurvey.create({ data: { siteId: site1.id, surveyId: survey.id } });
+  await prisma.siteSurvey.create({ data: { siteId: site2.id, surveyId: survey.id } });
+
+  console.log("Database seeded successfully.");
 }
 
+// Run the seeding script
 main()
-  .catch((e) => console.error(e))
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
   .finally(() => prisma.$disconnect());
