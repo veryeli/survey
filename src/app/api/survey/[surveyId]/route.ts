@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 export async function GET(request: Request, context: { params: { surveyId: string } }) {
   try {
     const surveyId = parseInt(context.params.surveyId, 10);
-
     const survey = await prisma.survey.findUnique({
       where: { id: surveyId },
       include: {

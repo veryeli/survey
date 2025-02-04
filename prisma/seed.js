@@ -6,23 +6,18 @@ const prisma = new PrismaClient();
 async function main() {
   // Step 1: Delete existing data
   await prisma.questionResponse.deleteMany();
+  await prisma.question.deleteMany();
   await prisma.siteSurvey.deleteMany();
   await prisma.page.deleteMany();
   await prisma.survey.deleteMany();
   await prisma.site.deleteMany();
-  await prisma.organization.deleteMany();
   await prisma.user.deleteMany();
-
 
   console.log("Existing surveys, pages, and questions deleted.");
 
-  // Step 2: Create Organizations
-  const org1 = await prisma.organization.create({ data: { name: "Organization One" } });
-  const org2 = await prisma.organization.create({ data: { name: "Organization Two" } });
-
   // Step 3: Create Sites
-  const site1 = await prisma.site.create({ data: { address: "123 Main St", organizationId: org1.id } });
-  const site2 = await prisma.site.create({ data: { address: "456 Elm St", organizationId: org2.id } });
+  const site1 = await prisma.site.create({ data: { address: "123 Main St"} });
+  const site2 = await prisma.site.create({ data: { address: "456 Elm St"} });
 
   // Step 4: Create Users with hashed passwords
   const password1 = await bcrypt.hash("password123", 10);
@@ -32,7 +27,9 @@ async function main() {
     data: {
       email: "user1@example.com",
       password: password1,
-      organizationId: org1.id,
+      site: {
+        connect: { id: site1.id } // Connect the user to site1
+      },
     },
   });
 
@@ -40,7 +37,9 @@ async function main() {
     data: {
       email: "user2@example.com",
       password: password2,
-      organizationId: org2.id,
+      site: {
+        connect: { id: site2.id } // Connect the user to site2
+      },
     },
   });
 

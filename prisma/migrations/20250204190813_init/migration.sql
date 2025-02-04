@@ -3,24 +3,15 @@ CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "organizationId" INTEGER NOT NULL,
+    "siteId" INTEGER NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Organization" (
-    "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-
-    CONSTRAINT "Organization_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Site" (
     "id" SERIAL NOT NULL,
     "address" TEXT NOT NULL,
-    "organizationId" INTEGER NOT NULL,
 
     CONSTRAINT "Site_pkey" PRIMARY KEY ("id")
 );
@@ -68,6 +59,7 @@ CREATE TABLE "SitePage" (
     "id" SERIAL NOT NULL,
     "siteSurveyId" INTEGER NOT NULL,
     "pageId" INTEGER NOT NULL,
+    "confirmed" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "SitePage_pkey" PRIMARY KEY ("id")
 );
@@ -85,11 +77,11 @@ CREATE TABLE "QuestionResponse" (
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
--- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+-- CreateIndex
+CREATE UNIQUE INDEX "QuestionResponse_sitePageId_questionId_key" ON "QuestionResponse"("sitePageId", "questionId");
 
 -- AddForeignKey
-ALTER TABLE "Site" ADD CONSTRAINT "Site_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "Organization"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "User" ADD CONSTRAINT "User_siteId_fkey" FOREIGN KEY ("siteId") REFERENCES "Site"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Page" ADD CONSTRAINT "Page_surveyId_fkey" FOREIGN KEY ("surveyId") REFERENCES "Survey"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -31,6 +31,7 @@ export interface QuestionResponse {
 export interface SitePage {
   id: number;
   siteSurveyId: number;
+  confirmed: boolean;
   page: {
     id: number;
     title: string;
@@ -44,24 +45,19 @@ export interface SiteSurvey {
   siteId: number;
   surveyId: number;
   sitePages: SitePage[];
+  survey: Survey;
 }
 
 export interface Site {
   id: number;
   address: string;
-  organizationId: number;
-  siteSurveys: SiteSurvey[];
-}
-
-export interface Organization {
-  id: number;
-  name: string;
-  sites: Site[];
   users: User[];
+  siteSurveys: SiteSurvey[];
 }
 
 export interface User {
   id: string;  // Remember, NextAuth expects id as string
   email: string;
-  organizationId: number;
+  siteID: number;
+  site: Site;
 }

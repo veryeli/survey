@@ -16,9 +16,7 @@ export async function GET() {
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
     include: {
-      organization: {
-        include: {
-          sites: {
+      site: {
             include: {
               siteSurveys: {
                 include: {
@@ -40,10 +38,11 @@ export async function GET() {
               }
             }
           }
-        }
-      }
     }
   });
+
+  console.log("User:", user);
+  console.log("Site:", user.site);
 
 
   // Handle cases where user or site is missing
@@ -58,6 +57,8 @@ export async function GET() {
     return NextResponse.json({ error: "No SiteSurvey found" }, { status: 404 });
   }
 
-  // Return the SiteSurvey with its nested data
-  return NextResponse.json(siteSurvey);
+  return NextResponse.json({
+    siteId: siteSurvey.siteId,  // Include siteId in the response
+    survey: siteSurvey.survey,
+  });
 }

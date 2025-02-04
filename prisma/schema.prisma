@@ -9,26 +9,18 @@ datasource db {
 }
 
 model User {
-  id             Int          @id @default(autoincrement())
-  email          String       @unique
-  password       String
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId Int
-}
-
-model Organization {
-  id    Int    @id @default(autoincrement())
-  name  String
-  sites Site[]
-  users User[]
+  id       Int   @id @default(autoincrement())
+  email    String @unique
+  password String
+  siteId   Int   // Added to establish relation with Site
+  site     Site  @relation(fields: [siteId], references: [id])
 }
 
 model Site {
-  id             Int          @id @default(autoincrement())
-  address        String
-  organizationId Int
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  siteSurveys    SiteSurvey[]
+  id          Int          @id @default(autoincrement())
+  address     String
+  users       User[]       // Adjusted to show multiple users can belong to a site
+  siteSurveys SiteSurvey[]
 }
 
 model Survey {
@@ -36,7 +28,7 @@ model Survey {
   year       Int
   season     String
   pages      Page[]
-  SiteSurvey SiteSurvey[]
+  siteSurveys SiteSurvey[]  // Renamed for clarity
 }
 
 model Page {
@@ -45,7 +37,7 @@ model Page {
   surveyId  Int
   survey    Survey     @relation(fields: [surveyId], references: [id])
   questions Question[]
-  SitePage  SitePage[]
+  sitePages SitePage[]  // Renamed for clarity
 }
 
 model Question {
@@ -55,7 +47,7 @@ model Question {
   defaultValue String
   pageId       Int
   page         Page               @relation(fields: [pageId], references: [id])
-  responses    QuestionResponse[] // Keeping this if you'll query responses for questions
+  responses    QuestionResponse[]
 }
 
 model SiteSurvey {
@@ -64,14 +56,15 @@ model SiteSurvey {
   surveyId  Int
   site      Site       @relation(fields: [siteId], references: [id])
   survey    Survey     @relation(fields: [surveyId], references: [id])
-  sitePages SitePage[]
+  sitePages SitePage[]  // Renamed for clarity
 }
 
 model SitePage {
   id           Int                @id @default(autoincrement())
   siteSurveyId Int
   pageId       Int
-  siteSurvey   SiteSurvey @relation(fields: [siteSurveyId], references: [id], onDelete: Cascade)
+  confirmed    Boolean            @default(false)
+  siteSurvey   SiteSurvey         @relation(fields: [siteSurveyId], references: [id], onDelete: Cascade)
   page         Page               @relation(fields: [pageId], references: [id])
   responses    QuestionResponse[]
 }
@@ -81,6 +74,9 @@ model QuestionResponse {
   sitePageId Int
   questionId Int
   value      String
+
   sitePage   SitePage @relation(fields: [sitePageId], references: [id])
   question   Question @relation(fields: [questionId], references: [id])
+
+  @@unique([sitePageId, questionId])  // Composite unique constraint
 }
