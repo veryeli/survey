@@ -2,10 +2,12 @@
 
 export interface Question {
   id: number;
-  text: string;
   type: "Numeric" | "Dropdown" | "MultiSelect" | "Short Response" | "Long Response" | "Confirm" | "SizingGrid";
-  defaultValue?: string;
+  pageId: number;
+  text: string;
+  defaultValue: string;
 }
+
 
 export interface Page {
   id: number;
@@ -58,6 +60,6 @@ export interface Site {
 export interface User {
   id: string;  // Remember, NextAuth expects id as string
   email: string;
-  siteID: number;
+  siteId: number;
   site: Site;
 }
