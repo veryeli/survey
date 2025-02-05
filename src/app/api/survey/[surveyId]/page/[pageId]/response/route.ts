@@ -42,7 +42,6 @@ export async function POST(
 
   try {
     const { responses, confirmed } = await request.json();
-    console.log("Received responses:", responses);
 
     if (!responses || responses.length === 0) {
       return NextResponse.json({ error: "No responses provided" }, { status: 400 });
