@@ -116,7 +116,7 @@ async function main() {
             title: "Clothing",
             questions: {
               create: [
-                { text: "Can you give us a sense of the overall sizes of your population", type: "SizingGrid", defaultValue: "" },
+                { text: "If you'd like, you can give us a sense of the overall sizes of your population", type: "SizingGrid", defaultValue: "" },
                 { text: "Number of clothing items distributed monthly?", type: "Numeric", defaultValue: "" },
                 { text: "Are seasonal clothes provided?", type: "Dropdown", defaultValue: "", options: ["Yes", "No"] },
               ],
