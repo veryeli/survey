@@ -5,7 +5,7 @@ const AboutPage = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white shadow-lg rounded-lg p-10 max-w-3xl text-center">
           <h1 className="text-4xl font-extrabold text-blue-600 mb-6">
-            Welcome to Distribute Aid Needs Assessment Survey!
+            Welcome to Distribute Aid Needs Assessment!
           </h1>
           <p className="text-gray-700 text-lg leading-relaxed mb-6">
             Distribute Aid is dedicated to assessing and addressing the needs of

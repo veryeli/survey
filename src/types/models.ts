@@ -4,7 +4,7 @@ export type ProgressStatus = 'LOCKED' | 'UNSTARTEDREQUIRED' | 'STARTEDREQUIRED' 
 
 export interface Question {
   id: number;
-  type: "Numeric" | "Dropdown" | "MultiSelect" | "Short Response" | "Long Response" | "SizingGrid";
+  type: "Numeric" | "Dropdown" | "MultiSelect" | "Short Response" | "Long Response" | "SizingGrid" | "YesNo";
   pageId: number;
   text: string;
   defaultValue: string;

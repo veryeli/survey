@@ -51,17 +51,37 @@ async function main() {
       pages: {
         create: [
           {
-            title: "Basic Info",
+            title: "Basic Information",
             questions: {
               create: [
-                { text: "People in Region", type: "Numeric", defaultValue: "" },
-                { text: "People Served Per Month", type: "Numeric", defaultValue: "" },
+
+                { text: "Organization Name", type: "Short Response", defaultValue: "" },
+                { text: "What region do you operate in?", type: "Short Response", defaultValue: "" },
+                { text: "Would you like to tell us more about the area that you operate in? ", type: "Long Response", defaultValue: "" },
+              ],
+            },
+          },
+          {
+            title: "Demographics",
+            questions: {
+              create: [
+                { text: "How many people total are there in your region who may access aid services?", type: "Numeric", defaultValue: "" },
+                { text: "How many unique people does your organisation support in one month?", type: "Numeric", defaultValue: "" },
                 { text: "Men Served", type: "Numeric", defaultValue: "" },
                 { text: "Women Served", type: "Numeric", defaultValue: "" },
                 { text: "Boys Served", type: "Numeric", defaultValue: "" },
                 { text: "Girls Served", type: "Numeric", defaultValue: "" },
                 { text: "Infants Served", type: "Numeric", defaultValue: "" },
-                { text: "Needs Served", type: "MultiSelect", defaultValue: "", options: ["Hygiene", "Shelter", "Food", "Clothing"] },
+                { text: "Needs Served", type: "MultiSelect", defaultValue: "", options: ["Hygiene", "Shelter", "Food", "Clothing", "Medical/Health"] },
+              ],
+            },
+          },
+          {
+            title: "Warehouse",
+            questions: {
+              create: [
+                { text: "Are you interested in participating in a network of US aid warehouses (hubs) for sending / receiving shipments and storing aid?", type: "YesNo", defaultValue: "" },
+                { text: "What kind of vehicles do you have access to?", type: "Dropdown", defaultValue: "", options: ["Pickup Truck", "Cargo Van", "Box Truck with Tail Lift", "Box Truck without Tail Lift"] },
               ],
             },
           },
@@ -101,6 +121,14 @@ async function main() {
               ],
             },
           },
+          {
+            title: "Additional Information",
+            questions: {
+              create: [
+                { text: "Is there anything you do NOT need more of that you would like to make us aware of?", type: "Long Response", defaultValue: "" },
+              ],
+            },
+          }
         ],
       },
     },
