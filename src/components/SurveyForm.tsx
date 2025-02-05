@@ -40,25 +40,29 @@ const DropdownInput: React.FC<InputProps> = ({ question, value, onChange }) => (
   </select>
 );
 
-const MultiSelectInput: React.FC<InputProps> = ({ question, value, onChange }) => (
-  <select
-    multiple
-    className="mt-1 p-2 border text-gray-900 rounded w-full"
-    value={value.split(",")}
-    onChange={(e) =>
-      onChange(
-        question.id,
-        Array.from(e.target.selectedOptions, (option) => option.value).join(",")
-      )
-    }
-  >
-    {question.options?.map((option: string) => (
-      <option key={option} value={option}>
-        {option}
-      </option>
-    ))}
-  </select>
-);
+const MultiSelectInput: React.FC<InputProps> = ({ question, value, onChange }) => {
+  // Convert value to array; if empty string, use an empty array.
+  const selectedValues = value ? value.split(",") : [];
+
+  return (
+    <select
+      multiple
+      className="mt-1 p-2 border text-gray-900 rounded w-full"
+      value={selectedValues}
+      onChange={(e) => {
+        const newValues = Array.from(e.target.selectedOptions, option => option.value);
+        onChange(question.id, newValues.join(","));
+      }}
+    >
+      {question.options?.map((option: string) => (
+        <option key={option} value={option}>
+          {option}
+        </option>
+      ))}
+    </select>
+  );
+};
+
 
 const ShortResponseInput: React.FC<InputProps> = ({ question, value, onChange }) => (
   <input
