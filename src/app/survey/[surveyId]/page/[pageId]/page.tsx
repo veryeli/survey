@@ -1,13 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
 import SurveyForm from "@/components/SurveyForm";
 import { Question, SidebarProps, ProgressStatus } from "@/types/models";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function SurveyPage() {
-  const { surveyId, pageId } = useParams();
+  const params = useParams();
+  const surveyId = useMemo(() => {
+    if (!params.surveyId) return "";
+    return Array.isArray(params.surveyId) ? params.surveyId[0] : params.surveyId;
+  }, [params.surveyId]);
+  const pageId = useMemo(() => {
+    if (!params.pageId) return "";
+    return Array.isArray(params.pageId) ? params.pageId[0] : params.pageId;
+  }, [params.pageId]);
   const router = useRouter();
 
   const [page, setPage] = useState<{ title: string; questions: Question[] } | null>(null);
@@ -17,17 +26,17 @@ export default function SurveyPage() {
 
   useEffect(() => {
     if (!surveyId || !pageId) return;
-    fetch(`/api/survey/${surveyId}/page/${pageId}`)
-      .then((res) => {
+    const fetchPage = async () => {
+      try {
+        const res = await fetch(`/api/survey/${surveyId}/page/${pageId}`);
         if (!res.ok) throw new Error(`API Error: ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
+        const data = await res.json();
         setPage(data);
         const initialResponses = data.questions.reduce(
           (acc: { [key: number]: string }, question: Question) => {
             const existing = data.responses?.find(
-              (resp: { questionId: number; value: string }) => resp.questionId === question.id
+              (resp: { questionId: number; value: string }) =>
+                resp.questionId === question.id
             );
             acc[question.id] =
               existing && existing.value !== ""
@@ -38,9 +47,19 @@ export default function SurveyPage() {
           {}
         );
         setResponses(initialResponses);
-      })
-      .catch((err) => setError(err.message));
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          if (err.name !== "AbortError") {
+            setError(err.message);
+          }
+        } else {
+          setError("An unknown error occurred.");
+        }
+      }
+    };
+    fetchPage();
   }, [surveyId, pageId]);
+
 
   useEffect(() => {
     if (!surveyId) return;
@@ -60,9 +79,12 @@ export default function SurveyPage() {
       .catch((err) => console.error("Survey fetch error:", err));
   }, [surveyId]);
 
-  const handleInputChange = (questionId: number, value: string) => {
-    setResponses((prev) => ({ ...prev, [questionId]: value }));
-  };
+  const handleInputChange = useCallback(
+    (questionId: number, value: string) => {
+      setResponses((prev) => ({ ...prev, [questionId]: value }));
+    },
+    []
+  );
 
   const handleSubmit = async (confirm = false) => {
     const payload = {
@@ -97,7 +119,7 @@ export default function SurveyPage() {
   };
 
   if (error) return <div>Error: {error}</div>;
-  if (!page) return <div>Loading...</div>;
+  if (!page) return <LoadingSpinner />;
 
   return (
     <div className="flex">

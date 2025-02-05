@@ -78,7 +78,7 @@ const SizingGridInput: React.FC<InputProps> = ({ question, value, onChange }) =>
   return (
     <div className="p-4 border rounded-lg">
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold">{question.text}</h3>
+        <h3 className="font-semibold">Enter sizing information here</h3>
         <button
           onClick={() => setIsExpanded((prev) => !prev)}
           className="text-blue-500 underline"

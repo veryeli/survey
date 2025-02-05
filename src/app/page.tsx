@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -18,5 +19,5 @@ export default function Home() {
     }
   }, [session, status, router]);
 
-  return <div>Loading...</div>; // Fallback while checking session
+  return <LoadingSpinner />;
 }

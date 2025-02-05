@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { SiteSurvey, Survey } from "@/types/models";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -39,7 +40,7 @@ export default function Dashboard() {
   }, [session, status, router]);
 
   if (status === "loading" || !siteSurvey || !surveyDetails)
-    return <div>Loading...</div>;
+    return <LoadingSpinner />;
   if (error) return <div>Error: {error}</div>;
 
   return (
