@@ -4,10 +4,11 @@ export type ProgressStatus = 'LOCKED' | 'UNSTARTEDREQUIRED' | 'STARTEDREQUIRED' 
 
 export interface Question {
   id: number;
-  type: "Numeric" | "Dropdown" | "MultiSelect" | "Short Response" | "Long Response" | "Confirm" | "SizingGrid";
+  type: "Numeric" | "Dropdown" | "MultiSelect" | "Short Response" | "Long Response" | "SizingGrid";
   pageId: number;
   text: string;
   defaultValue: string;
+  options?: string[]; // Added options for Dropdown, MultiSelect, and SizingGrid types
 }
 
 export interface Page {

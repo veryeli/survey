@@ -11,6 +11,88 @@ interface SurveyFormProps {
   onSubmit: (confirm: boolean) => void;
 }
 
+interface InputProps {
+  question: Question;
+  value: string;
+  onChange: (questionId: number, value: string) => void;
+}
+
+const NumericInput: React.FC<InputProps> = ({ question, value, onChange }) => (
+  <input
+    type="number"
+    className="mt-1 p-2 border text-gray-900 rounded w-full"
+    value={value}
+    onChange={(e) => onChange(question.id, e.target.value)}
+  />
+);
+
+const DropdownInput: React.FC<InputProps> = ({ question, value, onChange }) => (
+  <select
+    className="mt-1 p-2 border text-gray-900 rounded w-full"
+    value={value}
+    onChange={(e) => onChange(question.id, e.target.value)}
+  >
+    {question.options?.map((option: string) => (
+      <option key={option} value={option}>
+        {option}
+      </option>
+    ))}
+  </select>
+);
+
+const MultiSelectInput: React.FC<InputProps> = ({ question, value, onChange }) => (
+  <select
+    multiple
+    className="mt-1 p-2 border text-gray-900 rounded w-full"
+    value={value.split(",")}
+    onChange={(e) =>
+      onChange(
+        question.id,
+        Array.from(e.target.selectedOptions, (option) => option.value).join(",")
+      )
+    }
+  >
+    {question.options?.map((option: string) => (
+      <option key={option} value={option}>
+        {option}
+      </option>
+    ))}
+  </select>
+);
+
+const ShortResponseInput: React.FC<InputProps> = ({ question, value, onChange }) => (
+  <input
+    type="text"
+    className="mt-1 p-2 border text-gray-900 rounded w-full"
+    value={value}
+    onChange={(e) => onChange(question.id, e.target.value)}
+  />
+);
+
+const LongResponseInput: React.FC<InputProps> = ({ question, value, onChange }) => (
+  <textarea
+    className="mt-1 p-2 border text-gray-900 rounded w-full"
+    value={value}
+    onChange={(e) => onChange(question.id, e.target.value)}
+  />
+);
+
+const SizingGridInput: React.FC<InputProps> = ({ question, value, onChange }) => (
+  <div className="grid grid-cols-3 gap-2">
+    {question.options?.map((option: string) => (
+      <button
+        key={option}
+        className={`p-2 border rounded text-center ${
+          value === option ? "bg-blue-500 text-white" : "bg-white text-gray-900"
+        }`}
+        onClick={() => onChange(question.id, option)}
+      >
+        {option}
+      </button>
+    ))}
+  </div>
+);
+
 const SurveyForm: React.FC<SurveyFormProps> = ({
   title,
   questions,
@@ -18,6 +100,26 @@ const SurveyForm: React.FC<SurveyFormProps> = ({
   onInputChange,
   onSubmit,
 }) => {
+  const renderInput = (question: Question) => {
+    const value = responses[question.id] || "";
+    switch (question.type) {
+      case "Numeric":
+        return <NumericInput question={question} value={value} onChange={onInputChange} />;
+      case "Dropdown":
+        return <DropdownInput question={question} value={value} onChange={onInputChange} />;
+      case "MultiSelect":
+        return <MultiSelectInput question={question} value={value} onChange={onInputChange} />;
+      case "Short Response":
+        return <ShortResponseInput question={question} value={value} onChange={onInputChange} />;
+      case "Long Response":
+        return <LongResponseInput question={question} value={value} onChange={onInputChange} />;
+      case "SizingGrid":
+        return <SizingGridInput question={question} value={value} onChange={onInputChange} />;
+      default:
+        return <input type="text" value={value} onChange={(e) => onInputChange(question.id, e.target.value)} />;
+    }
+  };
+
   return (
     <div className="flex-1 p-8">
       <h1 className="text-3xl font-bold mb-6">{title}</h1>
@@ -25,12 +127,7 @@ const SurveyForm: React.FC<SurveyFormProps> = ({
         {questions.map((question) => (
           <div key={question.id}>
             <label className="block text-lg font-medium">{question.text}</label>
-            <input
-              type="text"
-              className="mt-1 p-2 border text-gray-900 rounded w-full"
-              value={responses[question.id]}
-              onChange={(e) => onInputChange(question.id, e.target.value)}
-            />
+            {renderInput(question)}
           </div>
         ))}
         <div className="flex space-x-4">

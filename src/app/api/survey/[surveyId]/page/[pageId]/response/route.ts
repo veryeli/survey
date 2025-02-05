@@ -7,13 +7,9 @@ const prisma = new PrismaClient();
 
 export async function POST(
   request: Request,
-  context: { params: { surveyId: string; pageId: string} }
+  { params }: { params: { surveyId: string; pageId: string } }
 ) {
-  console.log("POST request received for survey:", context.params.surveyId, "page:", context.params.pageId);
-  const params = await context.params;
-  const surveyId = params.surveyId;
-  const pageId = params.pageId;
-
+  const { surveyId, pageId } = params;
 
   // Retrieve session and user email
   const session = await getServerSession(authOptions);

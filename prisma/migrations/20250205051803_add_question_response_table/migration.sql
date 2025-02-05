@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "ProgressStatus" AS ENUM ('LOCKED', 'UNSTARTEDREQUIRED', 'STARTEDREQUIRED', 'UNSTARTEDOPTIONAL', 'STARTEDOPTIONAL', 'COMPLETE');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
@@ -41,6 +44,7 @@ CREATE TABLE "Question" (
     "type" TEXT NOT NULL,
     "defaultValue" TEXT NOT NULL,
     "pageId" INTEGER NOT NULL,
+    "options" JSONB,
 
     CONSTRAINT "Question_pkey" PRIMARY KEY ("id")
 );
@@ -60,6 +64,7 @@ CREATE TABLE "SitePage" (
     "siteSurveyId" INTEGER NOT NULL,
     "pageId" INTEGER NOT NULL,
     "confirmed" BOOLEAN NOT NULL DEFAULT false,
+    "progress" "ProgressStatus" NOT NULL DEFAULT 'UNSTARTEDREQUIRED',
 
     CONSTRAINT "SitePage_pkey" PRIMARY KEY ("id")
 );
@@ -96,13 +101,13 @@ ALTER TABLE "SiteSurvey" ADD CONSTRAINT "SiteSurvey_siteId_fkey" FOREIGN KEY ("s
 ALTER TABLE "SiteSurvey" ADD CONSTRAINT "SiteSurvey_surveyId_fkey" FOREIGN KEY ("surveyId") REFERENCES "Survey"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "SitePage" ADD CONSTRAINT "SitePage_siteSurveyId_fkey" FOREIGN KEY ("siteSurveyId") REFERENCES "SiteSurvey"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "SitePage" ADD CONSTRAINT "SitePage_pageId_fkey" FOREIGN KEY ("pageId") REFERENCES "Page"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "QuestionResponse" ADD CONSTRAINT "QuestionResponse_sitePageId_fkey" FOREIGN KEY ("sitePageId") REFERENCES "SitePage"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "SitePage" ADD CONSTRAINT "SitePage_siteSurveyId_fkey" FOREIGN KEY ("siteSurveyId") REFERENCES "SiteSurvey"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "QuestionResponse" ADD CONSTRAINT "QuestionResponse_questionId_fkey" FOREIGN KEY ("questionId") REFERENCES "Question"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "QuestionResponse" ADD CONSTRAINT "QuestionResponse_sitePageId_fkey" FOREIGN KEY ("sitePageId") REFERENCES "SitePage"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

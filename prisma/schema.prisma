@@ -57,6 +57,7 @@ model Question {
   pageId       Int
   page         Page               @relation(fields: [pageId], references: [id])
   responses    QuestionResponse[]
+  options      Json?
 }
 
 model SiteSurvey {
