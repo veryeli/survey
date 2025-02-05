@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
+import SurveyForm from "@/components/SurveyForm";
 import { Question, SidebarProps, ProgressStatus } from "@/types/models";
 
 export default function SurveyPage() {
@@ -103,40 +104,13 @@ export default function SurveyPage() {
       {surveyId && pageId && (
         <Sidebar surveyId={surveyId as string} pages={surveyPages} currentPageId={pageId as string} />
       )}
-      <div className="flex-1 p-8">
-        <h1 className="text-3xl font-bold mb-6">{page.title}</h1>
-        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-          {page.questions.map((question: Question) => (
-            <div key={question.id}>
-              <label className="block text-lg font-medium">
-                {question.text}
-              </label>
-              <input
-                type="text"
-                className="mt-1 p-2 border text-gray-900 rounded w-full"
-                value={responses[question.id]}
-                onChange={(e) => handleInputChange(question.id, e.target.value)}
-              />
-            </div>
-          ))}
-          <div className="flex space-x-4">
-            <button
-              type="button"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              onClick={() => handleSubmit(false)}
-            >
-              Save
-            </button>
-            <button
-              type="button"
-              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-              onClick={() => handleSubmit(true)}
-            >
-              Save & Confirm
-            </button>
-          </div>
-        </form>
-      </div>
+      <SurveyForm
+        title={page.title}
+        questions={page.questions}
+        responses={responses}
+        onInputChange={handleInputChange}
+        onSubmit={handleSubmit}
+      />
     </div>
   );
 }
