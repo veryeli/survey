@@ -10,12 +10,10 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "loading") return; // Wait until session is loaded
-
-    if (session) {
-      router.push("/dashboard"); // Redirect to dashboard if logged in
+    if (! session) {
+      router.push("/about");
     } else {
-      router.push("/about"); // Redirect to about page if not logged in
+      router.push("/dashboard"); // Redirect to dashboard if logged in
     }
   }, [session, status, router]);
 
