@@ -125,6 +125,11 @@ needs-assessment/
 ### Potential TODOs for Contributors
 
 #### **Frontend Improvements (Next.js/React):**
+0. **Implement critical features:**
+   - Incorporate a real authentication system (waiting on updates)
+   - Update survey to reflect the actual questions we want
+   - Store all responses in a queryable way (e.g. Baserow?)
+   - Get initial survey questions from Strapi (waiting on strapi deploy)
 
 1. **Enhance Form Components:**
    - Create reusable components for different question types (`Numeric`, `Dropdown`, `MultiSelect`, etc.).
@@ -208,4 +213,3 @@ needs-assessment/
 ## License
 
 This project is licensed under the MIT License.
-
