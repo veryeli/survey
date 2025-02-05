@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import Sidebar from "@/components/Sidebar"; // Import the sidebar
-import { Question } from "@/types/models";
+import Sidebar from "@/components/Sidebar";
+import { Question, SidebarProps, ProgressStatus } from "@/types/models";
 
 export default function SurveyPage() {
   const { surveyId, pageId } = useParams();
@@ -11,9 +11,8 @@ export default function SurveyPage() {
 
   const [page, setPage] = useState<{ title: string; questions: Question[] } | null>(null);
   const [responses, setResponses] = useState<{ [key: number]: string }>({});
-  const [surveyPages, setSurveyPages] = useState<{ id: number; title: string }[]>([]);
+  const [surveyPages, setSurveyPages] = useState<SidebarProps["pages"]>([]);
   const [error, setError] = useState<string | null>(null);
-
 
   useEffect(() => {
     if (!surveyId || !pageId) return;
@@ -23,7 +22,6 @@ export default function SurveyPage() {
         return res.json();
       })
       .then((data) => {
-        // data should include: { title, questions, responses }
         setPage(data);
         const initialResponses = data.questions.reduce(
           (acc: { [key: number]: string }, question: Question) => {
@@ -43,7 +41,6 @@ export default function SurveyPage() {
       .catch((err) => setError(err.message));
   }, [surveyId, pageId]);
 
-  // Fetch survey details (pages list) for the sidebar
   useEffect(() => {
     if (!surveyId) return;
     fetch(`/api/survey/${surveyId}`)
@@ -52,8 +49,12 @@ export default function SurveyPage() {
         return res.json();
       })
       .then((data) => {
-        // Assuming the API returns survey details with a pages array
-        setSurveyPages(data.pages);
+        const pagesWithProgress = data.pages.map((page: { id: number; title: string; progress: ProgressStatus }) => ({
+          id: page.id,
+          title: page.title,
+          progress: page.progress,
+        }));
+        setSurveyPages(pagesWithProgress);
       })
       .catch((err) => console.error("Survey fetch error:", err));
   }, [surveyId]);
@@ -84,8 +85,13 @@ export default function SurveyPage() {
       console.error("Error Response:", errorData);
       setError(errorData.error || "Failed to save responses.");
     } else {
-      alert(confirm ? "Responses saved and confirmed!" : "Responses saved!");
-      router.push("/dashboard");
+      const currentIndex = surveyPages.findIndex(page => page.id === Number(pageId));
+      if (currentIndex !== -1 && currentIndex < surveyPages.length - 1) {
+        const nextPageId = surveyPages[currentIndex + 1].id;
+        router.push(`/survey/${surveyId}/page/${nextPageId}`);
+      } else {
+        router.push("/dashboard");
+      }
     }
   };
 
@@ -94,11 +100,9 @@ export default function SurveyPage() {
 
   return (
     <div className="flex">
-      {/* Sidebar */}
       {surveyId && pageId && (
         <Sidebar surveyId={surveyId as string} pages={surveyPages} currentPageId={pageId as string} />
       )}
-      {/* Main content */}
       <div className="flex-1 p-8">
         <h1 className="text-3xl font-bold mb-6">{page.title}</h1>
         <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>

@@ -1,5 +1,7 @@
 // src/types/models.ts
 
+export type ProgressStatus = 'LOCKED' | 'UNSTARTEDREQUIRED' | 'STARTEDREQUIRED' | 'UNSTARTEDOPTIONAL' | 'STARTEDOPTIONAL' | 'COMPLETE';
+
 export interface Question {
   id: number;
   type: "Numeric" | "Dropdown" | "MultiSelect" | "Short Response" | "Long Response" | "Confirm" | "SizingGrid";
@@ -7,7 +9,6 @@ export interface Question {
   text: string;
   defaultValue: string;
 }
-
 
 export interface Page {
   id: number;
@@ -33,7 +34,7 @@ export interface QuestionResponse {
 export interface SitePage {
   id: number;
   siteSurveyId: number;
-  confirmed: boolean;
+  progress: ProgressStatus;
   page: {
     id: number;
     title: string;
@@ -55,6 +56,12 @@ export interface Site {
   address: string;
   users: User[];
   siteSurveys: SiteSurvey[];
+}
+
+export interface SidebarProps {
+  surveyId: string;
+  pages: { id: number; title: string; progress: ProgressStatus }[];
+  currentPageId: string;
 }
 
 export interface User {

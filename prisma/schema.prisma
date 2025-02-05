@@ -67,6 +67,7 @@ model SitePage {
   siteSurvey   SiteSurvey         @relation(fields: [siteSurveyId], references: [id], onDelete: Cascade)
   page         Page               @relation(fields: [pageId], references: [id])
   responses    QuestionResponse[]
+  progress    ProgressStatus @default(UNSTARTEDREQUIRED)
 }
 
 model QuestionResponse {
@@ -79,4 +80,13 @@ model QuestionResponse {
   question   Question @relation(fields: [questionId], references: [id])
 
   @@unique([sitePageId, questionId])  // Composite unique constraint
+}
+
+enum ProgressStatus {
+  LOCKED
+  UNSTARTEDREQUIRED
+  STARTEDREQUIRED
+  UNSTARTEDOPTIONAL
+  STARTEDOPTIONAL
+  COMPLETE
 }

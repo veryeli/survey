@@ -85,6 +85,7 @@ export async function initializeSiteSurvey(email: string) {
         data: {
           siteSurveyId: siteSurvey.id,
             pageId: page.id,
+            progress: page.title === 'Basic Info' ? 'UNSTARTEDREQUIRED' : 'LOCKED',
             responses: {
               create: page.questions.map((question) => ({
                 questionId: question.id,

@@ -2,21 +2,40 @@
 
 import Link from "next/link";
 import React from "react";
+import { CheckCircle, Lock, Circle, PlayCircle, PauseCircle } from "lucide-react";
+import { SidebarProps } from "@/types/models";
 
-interface SidebarProps {
-  surveyId: string;
-  pages: { id: number; title: string }[];
-  currentPageId: string;
-}
+const getStatusIcon = (progress: SidebarProps["pages"][0]["progress"]) => {
+  switch (progress) {
+    case 'LOCKED':
+      return <Lock className="text-gray-400 mr-2" size={18} />;
+    case 'UNSTARTEDREQUIRED':
+    case 'UNSTARTEDOPTIONAL':
+      return <Circle className="text-gray-400 mr-2" size={18} />;
+    case 'STARTEDREQUIRED':
+    case 'STARTEDOPTIONAL':
+      return <PlayCircle className="text-yellow-500 mr-2" size={18} />;
+    case 'COMPLETE':
+      return <CheckCircle className="text-green-500 mr-2" size={18} />;
+    default:
+      return <PauseCircle className="text-gray-400 mr-2" size={18} />;
+  }
+};
 
 const Sidebar: React.FC<SidebarProps> = ({ surveyId, pages, currentPageId }) => {
   return (
-    <aside className="w-64 p-4 border-r">
-      <h2 className="text-xl font-bold mb-4">Pages</h2>
+    <aside className="w-64 p-4 border-r bg-gray-50 h-full">
+      <h2 className="text-xl font-bold mb-4">Survey Progress</h2>
       <ul>
         {pages.map((page) => (
-          <li key={page.id} className={`mb-2 ${currentPageId === String(page.id) ? "font-bold" : ""}`}>
-            <Link href={`/survey/${surveyId}/page/${page.id}`}>
+          <li
+            key={page.id}
+            className={`flex items-center p-2 rounded-lg mb-2 cursor-pointer hover:bg-gray-200 transition-colors ${
+              currentPageId === String(page.id) ? "bg-blue-100 font-semibold" : ""
+            }`}
+          >
+            {getStatusIcon(page.progress)}
+            <Link href={`/survey/${surveyId}/page/${page.id}`} className="flex-1">
               {page.title}
             </Link>
           </li>
