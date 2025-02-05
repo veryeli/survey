@@ -9,7 +9,11 @@ export async function POST(
   request: Request,
   context: { params: { surveyId: string; pageId: string } }
 ) {
-  const { surveyId, pageId } = context.params;
+  console.log("POST request received for survey:", context.params.surveyId, "page:", context.params.pageId);
+  const params = await context.params;
+  const surveyId = params.surveyId;
+  const pageId = params.pageId;
+
 
   // Retrieve session and user email
   const session = await getServerSession(authOptions);

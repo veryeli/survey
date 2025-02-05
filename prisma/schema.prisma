@@ -8,27 +8,36 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ProgressStatus {
+  LOCKED
+  UNSTARTEDREQUIRED
+  STARTEDREQUIRED
+  UNSTARTEDOPTIONAL
+  STARTEDOPTIONAL
+  COMPLETE
+}
+
 model User {
-  id      Int    @id @default(autoincrement())
-  email   String @unique
+  id       Int    @id @default(autoincrement())
+  email    String @unique
   password String
-  siteId  Int
-  site    Site   @relation(fields: [siteId], references: [id])
+  siteId   Int
+  site     Site   @relation(fields: [siteId], references: [id])
 }
 
 model Site {
-  id          Int      @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   address     String
-  users       User[]
   siteSurveys SiteSurvey[]
+  users       User[]
 }
 
 model Survey {
-  id         Int          @id @default(autoincrement())
-  year       Int
-  season     String
-  pages      Page[]
-  siteSurveys SiteSurvey[]  // Renamed for clarity
+  id          Int          @id @default(autoincrement())
+  year        Int
+  season      String
+  pages       Page[]
+  siteSurveys SiteSurvey[]
 }
 
 model Page {
@@ -37,7 +46,7 @@ model Page {
   surveyId  Int
   survey    Survey     @relation(fields: [surveyId], references: [id])
   questions Question[]
-  sitePages SitePage[]  // Renamed for clarity
+  sitePages SitePage[]
 }
 
 model Question {
@@ -54,9 +63,9 @@ model SiteSurvey {
   id        Int        @id @default(autoincrement())
   siteId    Int
   surveyId  Int
+  sitePages SitePage[]
   site      Site       @relation(fields: [siteId], references: [id])
   survey    Survey     @relation(fields: [surveyId], references: [id])
-  sitePages SitePage[]  // Renamed for clarity
 }
 
 model SitePage {
@@ -64,10 +73,10 @@ model SitePage {
   siteSurveyId Int
   pageId       Int
   confirmed    Boolean            @default(false)
-  siteSurvey   SiteSurvey         @relation(fields: [siteSurveyId], references: [id], onDelete: Cascade)
-  page         Page               @relation(fields: [pageId], references: [id])
+  progress     ProgressStatus     @default(UNSTARTEDREQUIRED)
   responses    QuestionResponse[]
-  progress    ProgressStatus @default(UNSTARTEDREQUIRED)
+  page         Page               @relation(fields: [pageId], references: [id])
+  siteSurvey   SiteSurvey         @relation(fields: [siteSurveyId], references: [id], onDelete: Cascade)
 }
 
 model QuestionResponse {
@@ -75,18 +84,8 @@ model QuestionResponse {
   sitePageId Int
   questionId Int
   value      String
-
-  sitePage   SitePage @relation(fields: [sitePageId], references: [id])
   question   Question @relation(fields: [questionId], references: [id])
+  sitePage   SitePage @relation(fields: [sitePageId], references: [id])
 
-  @@unique([sitePageId, questionId])  // Composite unique constraint
-}
-
-enum ProgressStatus {
-  LOCKED
-  UNSTARTEDREQUIRED
-  STARTEDREQUIRED
-  UNSTARTEDOPTIONAL
-  STARTEDOPTIONAL
-  COMPLETE
+  @@unique([sitePageId, questionId])
 }

@@ -60,7 +60,7 @@ export interface Site {
 
 export interface SidebarProps {
   surveyId: string;
-  pages: { id: number; title: string; progress: ProgressStatus }[];
+  sitePages: { id: number; title: string; progress: ProgressStatus }[];
   currentPageId: string;
 }
 

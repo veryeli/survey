@@ -12,7 +12,7 @@ export default function SurveyPage() {
 
   const [page, setPage] = useState<{ title: string; questions: Question[] } | null>(null);
   const [responses, setResponses] = useState<{ [key: number]: string }>({});
-  const [surveyPages, setSurveyPages] = useState<SidebarProps["pages"]>([]);
+  const [surveyPages, setSurveyPages] = useState<SidebarProps["sitePages"]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -102,7 +102,7 @@ export default function SurveyPage() {
   return (
     <div className="flex">
       {surveyId && pageId && (
-        <Sidebar surveyId={surveyId as string} pages={surveyPages} currentPageId={pageId as string} />
+        <Sidebar surveyId={surveyId as string} sitePages={surveyPages} currentPageId={pageId as string} />
       )}
       <SurveyForm
         title={page.title}

@@ -9,13 +9,16 @@ export async function GET(
   request: Request,
   context: { params: { surveyId: string; pageId: string } }
 ) {
-  const { surveyId, pageId } = context.params;
+  const params = await context.params;
+  const surveyId = parseInt(params.surveyId, 10);
+  const pageId = parseInt(params.pageId, 10);
 
   // Get the page with its questions
   const page = await prisma.page.findUnique({
-    where: { id: parseInt(pageId, 10) },
+    where: { id: pageId },
     include: { questions: true },
   });
+
   if (!page) {
     return NextResponse.json({ error: "Page not found" }, { status: 404 });
   }
@@ -31,18 +34,19 @@ export async function GET(
       select: { siteId: true },
     });
 
-    if (user) {
-      // Look up the sitePage for this page, survey and user’s site
+    if (user && user.siteId) {
+      // Look up the sitePage for this page, survey, and user’s site
       const sitePage = await prisma.sitePage.findFirst({
         where: {
-          pageId: parseInt(pageId, 10),
+          pageId: pageId,
           siteSurvey: {
-            surveyId: parseInt(surveyId, 10),
+            surveyId: surveyId,
             siteId: user.siteId,
           },
         },
         include: { responses: true },
       });
+
       if (sitePage) {
         responses = sitePage.responses;
       }
