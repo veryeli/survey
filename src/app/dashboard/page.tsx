@@ -15,7 +15,7 @@ export default function Dashboard() {
     if (status === "loading") return; // Wait until session is loaded
 
     if (!session) {
-      router.push("/login");
+      router.push("/about");
       return;
     }
 

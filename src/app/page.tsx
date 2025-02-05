@@ -14,7 +14,7 @@ export default function Home() {
     if (session) {
       router.push("/dashboard"); // Redirect to dashboard if logged in
     } else {
-      router.push("/login"); // Redirect to login if not authenticated
+      router.push("/about"); // Redirect to about page if not logged in
     }
   }, [session, status, router]);
 
