@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Question } from "@/types/models";
+import SizingGridInput from "@/components/questions/SizingGridInput";
 
 interface SurveyFormProps {
   title: string;
@@ -79,22 +80,6 @@ const LongResponseInput: React.FC<InputProps> = ({ question, value, onChange }) 
     value={value}
     onChange={(e) => onChange(question.id, e.target.value)}
   />
-);
-
-const SizingGridInput: React.FC<InputProps> = ({ question, value, onChange }) => (
-  <div className="grid grid-cols-3 gap-2">
-    {question.options?.map((option: string) => (
-      <button
-        key={option}
-        className={`p-2 border rounded text-center ${
-          value === option ? "bg-blue-500 text-white" : "bg-white text-gray-900"
-        }`}
-        onClick={() => onChange(question.id, option)}
-      >
-        {option}
-      </button>
-    ))}
-  </div>
 );
 
 const SurveyForm: React.FC<SurveyFormProps> = ({
