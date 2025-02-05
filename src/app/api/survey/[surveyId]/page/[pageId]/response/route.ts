@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 export async function POST(
   request: Request,
-  context: { params: { surveyId: string; pageId: string } }
+  context: { params: { surveyId: string; pageId: string} }
 ) {
   console.log("POST request received for survey:", context.params.surveyId, "page:", context.params.pageId);
   const params = await context.params;
@@ -51,9 +51,23 @@ export async function POST(
     if (!responses || responses.length === 0) {
       return NextResponse.json({ error: "No responses provided" }, { status: 400 });
     }
+    let responsesChanged = false;
 
     // Upsert each response using the composite unique key
     for (const response of responses) {
+      const existingResponse = await prisma.questionResponse.findUnique({
+        where: {
+          sitePageId_questionId: {
+            sitePageId: sitePage.id,
+            questionId: response.questionId,
+          },
+        },
+      });
+
+      if (!existingResponse || existingResponse.value !== response.value) {
+        responsesChanged = true;
+      }
+
       await prisma.questionResponse.upsert({
         where: {
           sitePageId_questionId: {
@@ -71,11 +85,15 @@ export async function POST(
         },
       });
     }
+    const newStatus = confirmed ? 'COMPLETE' : responsesChanged ? 'STARTEDOPTIONAL' : sitePage.progress;
 
     // Update confirmation status on the site page
     await prisma.sitePage.update({
       where: { id: sitePage.id },
-      data: { confirmed },
+      data: {
+        confirmed,
+        progress: newStatus,
+      },
     });
 
     return NextResponse.json({ message: "Responses saved successfully!" });
