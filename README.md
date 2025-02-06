@@ -2,6 +2,17 @@
 
 This project is a Next.js application with a Prisma/Postgres backend designed to facilitate the management and completion of needs assessment surveys.
 
+## 🚀 Getting started with Gitpod
+
+Gitpod provides a fully automated development environment for your Next.js project, and the development environment is set up with just a single click. Follow these steps to get started:
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/distributeaid/needs-assessment-v2)
+
+1. Click the `Open in Gitpod` button above. Note: you'll need to have an account on [Gitpod](https://gitpod.io/login/) before proceeding with the next steps (this requires a GitHub account).
+2. Click the `Continue` button.
+3. Relax, a development environment is being set up for you in the first terminal.
+4. To access your workspace later, go to [Gitpod Workspaces](https://gitpod.io/workspaces). Pin the `needs-assessment-v2` workspace to prevent auto-deletion after 14 days by clicking the three dots next to the workspace name and selecting "Pin".
+
 ## Tech Stack
 
 - **Frontend:** Next.js (React, TypeScript, TailwindCSS)
