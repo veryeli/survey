@@ -11,11 +11,9 @@
     "check:format": "yarn prettier --check .",
     "format": "yarn prettier --write .",
     "lint": "next lint",
-    "test": "jest --watch",
-    "test:ci": "jest"
+    "test": "NODE_ENV=test DATABASE_URL=postgresql://username:password@localhost:5432/test_db jest"
   },
   "dependencies": {
-    "@prisma/client": "^6.3.0",
     "bcryptjs": "^2.4.3",
     "lucide-react": "^0.474.0",
     "next": "15.1.6",
@@ -24,7 +22,11 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.26.7",
+    "@babel/preset-env": "^7.26.7",
     "@eslint/eslintrc": "^3",
+    "@jest/globals": "^29.7.0",
+    "@prisma/client": "^6.3.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^14.6.1",
@@ -33,6 +35,8 @@
     "@types/node": "^20.17.17",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/supertest": "^6.0.2",
+    "babel-jest": "^29.7.0",
     "eslint": "^9.19.0",
     "eslint-config-next": "15.1.6",
     "eslint-config-prettier": "^10.0.1",
@@ -41,7 +45,8 @@
     "postcss": "^8",
     "prettier": "^3.4.2",
     "pretty-quick": "^4.0.0",
-    "prisma": "^6.3.0",
+    "prisma": "^6.3.1",
+    "supertest": "^7.0.0",
     "tailwindcss": "^3.4.1",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
