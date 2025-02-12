@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { SiteSurvey, Survey } from "@/types/models";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { pages } from "next/dist/build/templates/app-page";
+import { Flex, Text, Button, Box, Heading, Container } from "@radix-ui/themes";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -50,13 +51,14 @@ export default function Dashboard() {
   //Add code to Initialize survey status
 
   return (
-    <div className="max-w-4xl mx-auto flex flex-col items-center justify-center bg-gray-100 p-10 ">
-      <h1 className="text-3xl font-bold mb-6 text-blue-900">
+    <Container>
+    <Box className="max-w-4xl mx-auto flex flex-col items-center justify-center bg-gray-100 p-10 ">
+      <Heading className="text-3xl font-bold mb-6 text-blue-900">
        DASHBOARD
-      </h1>
+      </Heading>
       <hr className="border-t-2 border-black w-full mx-auto my-6" />
-      <p className="text-lg text-blue-900 my-8">Choose a category to fill up.</p>
-      <div className="flex grid grid-cols-1 md:grid-cols-2 gap-6 ">
+      <Text className="text-lg text-blue-900 my-8">Choose a category to fill up.</Text>
+      <Flex className="flex grid grid-cols-1 md:grid-cols-2 gap-6 ">
 
           {siteSurvey.survey.pages.slice(0,2).map((page) => (
             <div
@@ -64,18 +66,19 @@ export default function Dashboard() {
               className="bg-gray-300 flex flex-col px-8 py-4 border rounded-lg shadow-sm flex justify-between items-center"
             >
               <span className="text-xl font-medium text-blue-900">{page.title}</span>
-              <button
+              <Button
                 className="bg-blue-500 text-white px-4 p-2 mt-8 rounded hover:bg-blue-600 text-md"
                 onClick={() =>
                   router.push(`/survey/${siteSurvey.survey.id}/page/${page.id}`)
                 }
               >
                 Start
-              </button>
+              </Button>
             </div>
           ))}
          
-      </div>
-    </div>
+      </Flex>
+    </Box>
+    </Container>
   );
 }
