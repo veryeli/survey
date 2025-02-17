@@ -5,12 +5,16 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary: #082B76; /* Deep Blue */
+  --secondary: #8B9FC8; /* Soft Blue */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --primary: #1A3D92; /* Adjusted Blue for Dark Mode */
+    --secondary: #A0B2D4; /* Softer Blue */
   }
 }
 

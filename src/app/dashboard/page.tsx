@@ -5,7 +5,8 @@ import { useSession } from "next-auth/react";
 import { SiteSurvey, Survey } from "@/types/models";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { pages } from "next/dist/build/templates/app-page";
-import { Flex, Text, Button, Box, Heading, Container } from "@radix-ui/themes";
+import { Text, Button, Box, Heading, Container, Separator, Grid, Flex } from "@radix-ui/themes";
+
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -51,34 +52,37 @@ export default function Dashboard() {
   //Add code to Initialize survey status
 
   return (
-    <Container>
-    <Box className="max-w-4xl mx-auto flex flex-col items-center justify-center bg-gray-100 p-10 ">
-      <Heading className="text-3xl font-bold mb-6 text-blue-900">
-       DASHBOARD
-      </Heading>
-      <hr className="border-t-2 border-black w-full mx-auto my-6" />
-      <Text className="text-lg text-blue-900 my-8">Choose a category to fill up.</Text>
-      <Flex className="flex grid grid-cols-1 md:grid-cols-2 gap-6 ">
+    <Container className="w-full h-full bg-gray-100">
+      <Flex direction="column" align="center" justify="center" gap="4">
+        <Box align="center" justify="center" className="w-max-4xl mx-auto m-8">
+          <Text size="4" weight="bold" mb="6" className="text-[var(--primary)] ">
+          DASHBOARD
+          </Text>
+          <Separator className="border-t-[3px] border-black m-10" />
+          <Text size="3" className="text-blue-900">Choose a category to fill up.</Text>
+          <Grid columns={{ initial: "1", md: "2" }} className="gap-5 mt-6">
 
-          {siteSurvey.survey.pages.slice(0,2).map((page) => (
-            <div
-              key={page.id}
-              className="bg-gray-300 flex flex-col px-8 py-4 border rounded-lg shadow-sm flex justify-between items-center"
-            >
-              <span className="text-xl font-medium text-blue-900">{page.title}</span>
-              <Button
-                className="bg-blue-500 text-white px-4 p-2 mt-8 rounded hover:bg-blue-600 text-md"
-                onClick={() =>
-                  router.push(`/survey/${siteSurvey.survey.id}/page/${page.id}`)
-                }
-              >
-                Start
-              </Button>
-            </div>
-          ))}
-         
+              {siteSurvey.survey.pages.slice(0,2).map((page) => (
+                <Flex
+                  key={page.id}
+                  direction="column" justify="between"  align="center" width="350px" height="200px" className="bg-[var(--secondary)] border p-8 rounded-lg shadow-sm justify-between items-center"
+                >
+                  <Text mb="4" className="text-2xl font-medium text-blue-900">{page.title}</Text>
+                  <Button
+                   className="bg-blue-500 text-white border rounded hover:bg-blue-600 text-md"
+                    onClick={() =>
+                      router.push(`/survey/${siteSurvey.survey.id}/page/${page.id}`)
+                    }
+                  >
+                    Start
+                  </Button>
+                </Flex>
+              ))}
+            
+          </Grid>
+        </Box>
       </Flex>
-    </Box>
     </Container>
   );
 }
+
