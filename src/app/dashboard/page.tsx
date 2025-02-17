@@ -14,9 +14,6 @@ export default function Dashboard() {
   const [surveyDetails, setSurveyDetails] = useState<Survey | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  // const dashboardPage = pages.filter(page => 
-  //   page.title === 'Basic' || page.title === 'Demographics'
-  // )
 
   useEffect(() => {
     if (status === "loading") return; // Wait until session is loaded
