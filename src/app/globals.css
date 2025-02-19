@@ -5,16 +5,16 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --primary: #082B76; /* Deep Blue */
-  --secondary: #8B9FC8; /* Soft Blue */
+  --primary: #082b76; /* Deep Blue */
+  --secondary: #8b9fc8; /* Soft Blue */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
-    --primary: #1A3D92; /* Adjusted Blue for Dark Mode */
-    --secondary: #A0B2D4; /* Softer Blue */
+    --primary: #1a3d92; /* Adjusted Blue for Dark Mode */
+    --secondary: #a0b2d4; /* Softer Blue */
   }
 }
 
@@ -22,7 +22,7 @@ body {
   h1 {
     font-weight: 700; /* Apply 700 weight to h1 */
   }
-  
+
   p {
     font-weight: 400; /* Apply 400 weight to p */
   }

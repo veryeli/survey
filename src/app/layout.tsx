@@ -22,7 +22,8 @@ export default function RootLayout({
         <Providers>
           <Navbar />
           {children}
-        </Providers>  {/* Wrap children with Providers */}
+        </Providers>{" "}
+        {/* Wrap children with Providers */}
       </body>
     </html>
   );
