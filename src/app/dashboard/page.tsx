@@ -5,8 +5,7 @@ import { useSession } from "next-auth/react";
 import { SiteSurvey, Survey } from "@/types/models";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { pages } from "next/dist/build/templates/app-page";
-import { Text, Button, Box, Heading, Container, Separator, Grid, Flex } from "@radix-ui/themes";
-
+import { Text, Button, Box, Container, Separator, Flex } from "@radix-ui/themes";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -46,38 +45,39 @@ export default function Dashboard() {
     return <LoadingSpinner />;
   if (error) return <div>Error: {error}</div>;
 
-  //Add code to Initialize survey status
-
   return (
-    <Container className="w-full h-full bg-gray-100">
+    <Container className="w-full h-screen bg-gray-100 p-8">
       <Flex direction="column" align="center" justify="center" gap="4">
-        <Box align="center" justify="center" className="w-max-4xl mx-auto m-8">
-          <Text size="4" weight="bold" mb="6" className="text-[var(--primary)] ">
+        <Box align="center" justify="center" className="w-full">
+          <h1 className="text-3xl text-[var(--primary)] ">
           DASHBOARD
-          </Text>
-          <Separator className="border-t-[3px] border-black m-10" />
-          <Text size="3" className="text-blue-900">Choose a category to fill up.</Text>
-          <Grid columns={{ initial: "1", md: "2" }} className="gap-5 mt-6">
+          </h1>
+          <Separator className="border-t-2 border-black my-10" />
+          <Text as="p" className="text-xl font-bold text-blue-900 mt-20">Choose a category to fill up.</Text>
+          <Flex direction={{ initial: "column", md: "row" }} align="center" justify="center" className="gap-6 mt-6">
 
               {siteSurvey.survey.pages.slice(0,2).map((page) => (
-                <Flex
+                <Box
                   key={page.id}
-                  direction="column" justify="between"  align="center" width="350px" height="200px" className="bg-[var(--secondary)] border p-8 rounded-lg shadow-sm justify-between items-center"
+                   align="center" width="350px" height="200px" className="bg-[var(--secondary)] border rounded-lg shadow-sm justify-center items-center text-center"
                 >
-                  <Text mb="4" className="text-2xl font-medium text-blue-900">{page.title}</Text>
-                  <Button
-                   className="bg-blue-500 text-white border rounded hover:bg-blue-600 text-md"
+                  <h1 className="text-3xl font-bold text-blue-900 p-4">{page.title}</h1>
+               
+                  <button 
+                    className="text-lg bg-blue-400 rounded-md hover:bg-green-600 px-5 py-4 my-6"
                     onClick={() =>
                       router.push(`/survey/${siteSurvey.survey.id}/page/${page.id}`)
                     }
                   >
-                    Start
-                  </Button>
-                </Flex>
+                    COMPLETE
+                  </button>
+                 
+                </Box>
               ))}
             
-          </Grid>
+          </Flex>
         </Box>
+      
       </Flex>
     </Container>
   );
