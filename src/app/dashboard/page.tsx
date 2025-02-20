@@ -55,9 +55,9 @@ export default function Dashboard() {
   return (
     <Container className="w-full h-screen bg-gray-100 p-8">
       <Flex direction="column" align="center" justify="center" gap="4">
-        <Box align="center" justify="center" className="">
+        <Box align="center" justify="center" className="w-full">
           <h1 className="text-4xl text-[var(--primary)] ">DASHBOARD</h1>
-          <Separator className="border-t-2 border-black my-10" />
+          <Separator className="border-t-2 border-black m-10" />
           <Text as="p" className="text-xl font-bold text-blue-900 mt-20">
             Choose a category to fill up.
           </Text>
