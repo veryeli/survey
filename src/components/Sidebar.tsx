@@ -12,10 +12,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   currentPageId,
 }) => {
   return (
-    <Box
-      style={{ backgroundColor: "white" }}
-      className="w-32"
-    >
+    <Box style={{ backgroundColor: "white" }} className="w-32">
       <ul>
         <li>
           <Link
